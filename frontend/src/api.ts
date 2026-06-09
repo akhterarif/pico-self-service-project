@@ -24,6 +24,7 @@ export const listVms = async () => (await api.get<Vm[]>('/vms/')).data;
 export const createVm = async (payload: { name: string; package_id: number }) => (await api.post<Vm>('/vms/', payload)).data;
 export const vmAction = async (id: number, action: 'start' | 'stop') => (await api.post<Vm>(`/vms/${id}/${action}/`)).data;
 export const deleteVm = async (id: number) => (await api.delete(`/vms/${id}/`)).data;
+export const listVmAudit = async (id: number) => (await api.get<AuditLog[]>(`/vms/${id}/audit/`)).data;
 export const listInvoices = async () => (await api.get<Invoice[]>('/invoices/')).data;
 export const payInvoice = async (id: number) => (await api.post<Invoice>(`/invoices/${id}/pay/`)).data;
 export const listAudit = async () => (await api.get<AuditLog[]>('/audit/')).data;
