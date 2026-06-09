@@ -22,6 +22,24 @@ class FakeOpenStackProvider(CloudProvider):
         active = CloudServer(server_id=server_id, status="ACTIVE", ip_address=self._private_ip())
         self._servers[server_id] = active
         return active
+    
+    def get_server_status(self, server_id: str) -> CloudServer:
+        server = self._servers.get(server_id)
+        if server:
+            usage = {
+                "storage": random.randint(1, 100),
+                "cpu": random.randint(1, 100),
+                "memory": random.randint(1, 100),
+                "network": random.randint(1, 100)
+            }
+        else:
+            usage = {
+                "storage": random.randint(1, 100),
+                "cpu": random.randint(1, 100),
+                "memory": random.randint(1, 100),
+                "network": random.randint(1, 100)
+            }
+        return usage
 
     def stop_server(self, server_id: str) -> CloudServer:
         current = self.get_server(server_id)

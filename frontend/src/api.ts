@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export type User = { id: number; email: string; role: 'CUSTOMER' | 'ADMIN'; company_name?: string };
 export type Package = { id: number; name: string; slug: string; vcpu: number; ram_mb: number; disk_gb: number; monthly_price: string; is_active: boolean };
-export type Vm = { id: number; name: string; package: Package; cloud_server_id: string; status: string; ip_address?: string; created_at: string; updated_at: string; latest_invoice_id?: number };
+export type Vm = { id: number; name: string; package: Package; cloud_server_id: string; status: string; ip_address?: string; created_at: string; updated_at: string; latest_invoice_id?: number, usage?: { storage: number; cpu: number; memory: number; network: number } };
 export type Invoice = { id: number; invoice_number: string; vm: number; vm_name: string; amount: string; currency: string; status: string; due_date: string; created_at: string; paid_at?: string };
 export type AuditLog = { id: number; entity_type: string; entity_id: string; action: string; description: string; metadata: Record<string, unknown>; created_at: string };
 export type Customer = { id: number; email: string; company_name: string; created_at: string };

@@ -80,13 +80,12 @@ export function VmDetailsPage() {
   const uptimeMs = Date.now() - new Date(vm.created_at).getTime();
   const uptimeDays = Math.max(0, Math.floor(uptimeMs / (1000 * 60 * 60 * 24)));
   const monthUptimeHours = Math.max(1, Math.floor(uptimeMs / (1000 * 60 * 60)));
-  const estimatedStorageUsedGb = Math.max(
-    1,
-    Math.min(vm.package.disk_gb, Math.round(vm.package.disk_gb * 0.62)),
-  );
-  const estimatedCpuUsage = percentFromId(vm.id, 72);
-  const estimatedMemoryUsage = percentFromId(vm.id + 3, 68);
-  const estimatedNetworkUsage = percentFromId(vm.id + 7, 54);
+  const estimatedStorageUsedGb = vm.usage?.storage
+    ? Math.min(vm.package.disk_gb, vm.usage.storage)
+    : 0;
+  const estimatedCpuUsage = percentFromId(vm.usage?.cpu ?? 0, 72);
+  const estimatedMemoryUsage = percentFromId(vm.usage?.memory ?? 0, 68);
+  const estimatedNetworkUsage = percentFromId(vm.usage?.network ?? 0, 54);
   const ipOctets = vm.ip_address?.split(".") ?? [];
   const ipPoolLabel = vm.ip_address
     ? `10.42.0.0/24 allocation, host .${ipOctets[3] ?? "0"}`
