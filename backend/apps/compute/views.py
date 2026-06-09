@@ -9,6 +9,8 @@ from apps.common import is_admin
 from apps.compute.models import VirtualMachine
 from apps.compute.serializers import VmCreateSerializer, VmSerializer
 from apps.compute.services import VmLifecycleService, VmProvisioningService
+from apps.billing.models import Invoice
+from apps.billing.serializers import InvoiceSerializer
 
 
 def vm_visible_queryset(user):
@@ -62,6 +64,16 @@ class VmAuditTrailView(generics.ListAPIView):
     def get_queryset(self):
         vm = get_object_or_404(vm_visible_queryset(self.request.user), pk=self.kwargs["pk"])
         qs = AuditLog.objects.select_related("customer").filter(entity_type="vm", entity_id=str(vm.id))
+        if not is_admin(self.request.user):
+            qs = qs.filter(customer=self.request.user.customer)
+        return qs
+
+class VmInvoiceView(generics.ListAPIView):
+    serializer_class = InvoiceSerializer
+
+    def get_queryset(self):
+        vm = get_object_or_404(vm_visible_queryset(self.request.user), pk=self.kwargs["pk"])
+        qs = Invoice.objects.select_related("customer").filter(vm__id=vm.id)
         if not is_admin(self.request.user):
             qs = qs.filter(customer=self.request.user.customer)
         return qs
