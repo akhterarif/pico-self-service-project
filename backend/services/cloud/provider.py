@@ -1,0 +1,17 @@
+from dataclasses import dataclass
+from typing import Protocol
+
+
+@dataclass(frozen=True)
+class CloudServer:
+    server_id: str
+    status: str
+    ip_address: str | None = None
+
+
+class CloudProvider(Protocol):
+    def create_server(self, *, name: str, vcpu: int, ram_mb: int, disk_gb: int) -> CloudServer: ...
+    def get_server(self, server_id: str) -> CloudServer: ...
+    def stop_server(self, server_id: str) -> CloudServer: ...
+    def start_server(self, server_id: str) -> CloudServer: ...
+    def delete_server(self, server_id: str) -> CloudServer: ...
