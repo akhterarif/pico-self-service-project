@@ -88,6 +88,10 @@ npm test
 - Role based billing
 - Payment providers
 
+## Project Summary
+
+A structured project summary is available in `docs/ai-project-summary.md` for quick architecture and implementation reference.
+
 ## AI Usage Disclosure
 
 This assessment project was generated with AI assistance. Engineering choices, structure, and implementation were reviewed and organized to demonstrate maintainable full-stack design.
