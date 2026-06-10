@@ -32,3 +32,5 @@ export const listAudit = async () => (await api.get<AuditLog[]>('/audit/')).data
 export const customerDashboard = async () => (await api.get('/dashboard/')).data;
 export const adminDashboard = async () => (await api.get('/admin/dashboard/')).data;
 export const listCustomers = async () => (await api.get<Customer[]>('/admin/customers/')).data;
+export const aiChat = async (prompt: string) => (await api.post('/ai/chat/', { prompt })).data;
+export const aiQuery = async (text: string) => (await api.post('/ai/query/', { text })).data;

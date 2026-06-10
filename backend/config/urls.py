@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/auth/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/auth/me", MeView.as_view(), name="me"),
     path("api/admin/customers/", AdminCustomerListView.as_view(), name="admin-customers"),
+    path("api/ai/", include("apps.ai.urls")),
     path("api/", include("apps.catalog.urls")),
     path("api/", include("apps.compute.urls")),
     path("api/", include("apps.billing.urls")),

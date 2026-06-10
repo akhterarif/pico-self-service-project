@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "apps.billing",
     "apps.audit",
     "apps.dashboard",
+    "apps.ai",
 ]
 
 MIDDLEWARE = [
@@ -103,3 +104,6 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_TASK_ALWAYS_EAGER = os.getenv("CELERY_TASK_ALWAYS_EAGER", "1") == "1"
+
+# ChromaDB persistence directory (mounted from docker-compose)
+CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", str(BASE_DIR / "data" / "chroma"))
