@@ -6,6 +6,18 @@ export type Vm = { id: number; name: string; package: Package; cloud_server_id: 
 export type Invoice = { id: number; invoice_number: string; vm: number; vm_name: string; amount: string; currency: string; status: string; due_date: string; created_at: string; paid_at?: string };
 export type AuditLog = { id: number; entity_type: string; entity_id: string; action: string; description: string; metadata: Record<string, unknown>; created_at: string };
 export type Customer = { id: number; email: string; company_name: string; created_at: string };
+export type ChatMessage = {
+  id: number;
+  user_email: string;
+  customer_name?: string;
+  prompt: string;
+  response: string;
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  error?: string;
+  source_docs: { document: string; meta: Record<string, unknown> }[];
+  created_at: string;
+  updated_at: string;
+};
 
 const baseURL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api';
 export const api = axios.create({ baseURL });
@@ -32,5 +44,7 @@ export const listAudit = async () => (await api.get<AuditLog[]>('/audit/')).data
 export const customerDashboard = async () => (await api.get('/dashboard/')).data;
 export const adminDashboard = async () => (await api.get('/admin/dashboard/')).data;
 export const listCustomers = async () => (await api.get<Customer[]>('/admin/customers/')).data;
-export const aiChat = async (prompt: string) => (await api.post('/ai/chat/', { prompt })).data;
+export const listAiChats = async () => (await api.get<ChatMessage[]>('/ai/chats/')).data;
+export const getAiChat = async (id: number) => (await api.get<ChatMessage>(`/ai/chats/${id}/`)).data;
+export const createAiChat = async (prompt: string) => (await api.post<ChatMessage>('/ai/chat/', { prompt })).data;
 export const aiQuery = async (text: string) => (await api.post('/ai/query/', { text })).data;

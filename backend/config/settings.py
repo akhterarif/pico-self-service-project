@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "drf_spectacular",
+    "django_celery_beat",
+    
     "apps.accounts",
     "apps.catalog",
     "apps.compute",

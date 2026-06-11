@@ -35,14 +35,21 @@ class VectorIndexer:
         ids = [d["id"] for d in docs]
         documents = [d["text"] for d in docs]
         metadatas = [d["meta"] for d in docs]
-        # replace existing collection content
         try:
-            self.client.reset()  # be conservative: reset client to ensure clean state
+            self.client.reset()
         except Exception:
             pass
         self.collection = self.client.get_or_create_collection("pico_project")
         self.collection.add(ids=ids, documents=documents, metadatas=metadatas)
 
     def query(self, text: str, n_results: int = 5):
-        res = self.collection.query(query_texts=[text], n_results=n_results)
-        return res
+        return self.collection.query(query_texts=[text], n_results=n_results)
+
+    def query_similar(self, text: str, n_results: int = 5) -> List[dict]:
+        result = self.collection.query(query_texts=[text], n_results=n_results, include=["documents", "metadatas"])
+        docs = result.get("documents", [[]])[0] if result else []
+        metas = result.get("metadatas", [[]])[0] if result else []
+        items = []
+        for document, metadata in zip(docs, metas):
+            items.append({"document": document, "meta": metadata})
+        return items
