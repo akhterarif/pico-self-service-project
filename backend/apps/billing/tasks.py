@@ -10,16 +10,9 @@ from services.cloud.fake_openstack import FakeOpenStackProvider
 
 
 @shared_task
-def provision_vm(vm_id: int) -> None:
-    vm = VirtualMachine.objects.select_related("customer", "package").get(id=vm_id)
-    if vm.status != VmStatus.PROVISIONING:
-        return
-    if not settings.CELERY_TASK_ALWAYS_EAGER:
-        time.sleep(3)
-    server = FakeOpenStackProvider().get_server(vm.cloud_server_id)
-    vm.status = VmStatus.ACTIVE
-    vm.ip_address = server.ip_address
-    vm.save(update_fields=["status", "ip_address", "updated_at"])
+def send_unpaid_invoice_notification() -> None:
+    # Implementation for sending unpaid invoice notifications
+    pass
     AuditService.record(
         customer=vm.customer,
         entity_type="vm",

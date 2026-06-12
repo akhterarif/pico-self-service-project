@@ -20,7 +20,7 @@ services:
     build:
       context: ./backend
     environment:
-      DJANGO_SECRET_KEY: dev-secret-change-me
+      DJANGO_SECRET_KEY: dee321f5-9492-4325-9943-b31e39c50924
       DJANGO_DEBUG: "1"
       DJANGO_ALLOWED_HOSTS: "*"
       DATABASE_URL: postgres://pico:pico@postgres:5432/pico
@@ -40,7 +40,7 @@ services:
     build:
       context: ./backend
     environment:
-      DJANGO_SECRET_KEY: dev-secret-change-me
+      DJANGO_SECRET_KEY: dee321f5-9492-4325-9943-b31e39c50924
       DJANGO_DEBUG: "1"
       DATABASE_URL: postgres://pico:pico@postgres:5432/pico
       REDIS_URL: redis://redis:6379/0
@@ -51,6 +51,28 @@ services:
       redis:
         condition: service_started
     command: ["celery", "-A", "config", "worker", "-l", "info"]
+
+  celery-beat:
+    build:
+      context: ./backend
+    environment:
+      DJANGO_SECRET_KEY: dee321f5-9492-4325-9943-b31e39c50924
+      DJANGO_DEBUG: "1"
+      DATABASE_URL: postgres://pico:pico@postgres:5432/pico
+      REDIS_URL: redis://redis:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      redis:
+        condition: service_started
+      celery:
+        condition: service_started
+      
+    command: ["celery", "-A", "config", "beat", "-l", "info"]
+
 
   frontend:
     build:

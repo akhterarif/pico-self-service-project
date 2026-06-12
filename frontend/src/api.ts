@@ -21,6 +21,7 @@ export const register = async (email: string, password: string, company_name: st
 export const me = async () => (await api.get<User>('/auth/me')).data;
 export const listPackages = async () => (await api.get<Package[]>('/packages/')).data;
 export const listVms = async () => (await api.get<Vm[]>('/vms/')).data;
+export const detailVm = async (id: number) => (await api.get<Vm>(`/vms/${id}/`)).data;
 export const createVm = async (payload: { name: string; package_id: number }) => (await api.post<Vm>('/vms/', payload)).data;
 export const vmAction = async (id: number, action: 'start' | 'stop') => (await api.post<Vm>(`/vms/${id}/${action}/`)).data;
 export const deleteVm = async (id: number) => (await api.delete(`/vms/${id}/`)).data;

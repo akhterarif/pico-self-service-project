@@ -7,7 +7,7 @@ from apps.audit.models import AuditLog
 from apps.audit.serializers import AuditLogSerializer
 from apps.common import is_admin
 from apps.compute.models import VirtualMachine
-from apps.compute.serializers import VmCreateSerializer, VmSerializer
+from apps.compute.serializers import VmCreateSerializer, VmDetailSerializer, VmSerializer
 from apps.compute.services import VmLifecycleService, VmProvisioningService
 from apps.billing.models import Invoice
 from apps.billing.serializers import InvoiceSerializer
@@ -28,7 +28,13 @@ class VmViewSet(viewsets.ModelViewSet):
         return vm_visible_queryset(self.request.user)
 
     def get_serializer_class(self):
-        return VmCreateSerializer if self.action == "create" else VmSerializer
+        
+        if self.action == "create":
+            return VmCreateSerializer
+        elif self.action in ["retrieve", "update", "partial_update"]:
+            return VmDetailSerializer
+        else:
+            return VmSerializer
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)

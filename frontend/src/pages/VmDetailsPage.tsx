@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { listInvoices, listVmAudit, listVmInvoice, listVms } from "../api";
+import { listInvoices, listVmAudit, listVmInvoice, detailVm } from "../api";
 import {
   ErrorBox,
   Money,
@@ -56,7 +56,14 @@ function percentFromId(id: number, max: number) {
 export function VmDetailsPage() {
   const { id } = useParams();
   const vmId = Number(id);
-  const vms = useQuery({ queryKey: ["vms"], queryFn: listVms });
+  const vms = useQuery({
+    queryKey: ["vms", vmId],
+    queryFn: () => detailVm(vmId),
+    enabled: Number.isFinite(vmId),
+  });
+
+  console.log("VM details query", { vmId, vms });
+
   const invoices = useQuery({
     queryKey: ["vm-invoices", vmId],
     queryFn: () => listVmInvoice(vmId),
@@ -72,7 +79,7 @@ export function VmDetailsPage() {
     return <Spinner />;
   if (vms.isError || invoices.isError || audit.isError) return <ErrorBox />;
 
-  const vm = vms.data?.find((item) => item.id === vmId);
+  const vm = vms.data;
   if (!vm) return <ErrorBox message="VM not found." />;
 
   const invoice = invoices.data?.[0] ?? null;
@@ -206,51 +213,54 @@ export function VmDetailsPage() {
           </div>
         </Card>
 
-        <Card title="Usage Metering">
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Stat
-                label="CPU"
-                value={`${estimatedCpuUsage}%`}
-                hint="Estimated snapshot"
-              />
-              <Stat
-                label="Memory"
-                value={`${estimatedMemoryUsage}%`}
-                hint="Estimated snapshot"
-              />
-              <Stat
-                label="Network"
-                value={`${estimatedNetworkUsage}%`}
-                hint="Estimated snapshot"
-              />
-            </div>
-            <div className="space-y-3">
-              {[
-                { label: "CPU", value: estimatedCpuUsage },
-                { label: "Memory", value: estimatedMemoryUsage },
-                { label: "Network", value: estimatedNetworkUsage },
-              ].map((metric) => (
-                <div key={metric.label}>
-                  <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
-                    <span>{metric.label}</span>
-                    <span>{metric.value}%</span>
+        {/* TO-DO: if the vm is stopped or deleted then don't show this card */}
+        {vm.status !== "STOPPED" && vm.status !== "DELETED" && (
+          <Card title="Usage Metering">
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Stat
+                  label="CPU"
+                  value={`${estimatedCpuUsage}%`}
+                  hint="Estimated snapshot"
+                />
+                <Stat
+                  label="Memory"
+                  value={`${estimatedMemoryUsage}%`}
+                  hint="Estimated snapshot"
+                />
+                <Stat
+                  label="Network"
+                  value={`${estimatedNetworkUsage}%`}
+                  hint="Estimated snapshot"
+                />
+              </div>
+              <div className="space-y-3">
+                {[
+                  { label: "CPU", value: estimatedCpuUsage },
+                  { label: "Memory", value: estimatedMemoryUsage },
+                  { label: "Network", value: estimatedNetworkUsage },
+                ].map((metric) => (
+                  <div key={metric.label}>
+                    <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
+                      <span>{metric.label}</span>
+                      <span>{metric.value}%</span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full bg-emerald-500"
+                        style={{ width: `${metric.value}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-emerald-500"
-                      style={{ width: `${metric.value}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <p className="text-xs text-slate-500">
+                Live telemetry is not wired into the current backend yet, so
+                this panel shows a usage snapshot built from the VM context.
+              </p>
             </div>
-            <p className="text-xs text-slate-500">
-              Live telemetry is not wired into the current backend yet, so this
-              panel shows a usage snapshot built from the VM context.
-            </p>
-          </div>
-        </Card>
+          </Card>
+        )}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
