@@ -283,6 +283,11 @@ export function VmDetailsPage() {
               value={new Date(vm.updated_at).toLocaleDateString()}
               hint="Last compute update"
             />
+            <Stat
+              label="Next billing date"
+              value={new Date(vm.next_billing_date).toLocaleDateString()}
+              hint="Next billing cycle"
+            />
           </div>
         </Card>
       </div>

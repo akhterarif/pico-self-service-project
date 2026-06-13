@@ -26,7 +26,7 @@ class VmDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = VirtualMachine
-        fields = ["id", "name", "package", "cloud_server_id", "status", "ip_address", "created_at", "updated_at", "latest_invoice_id", "usage"]
+        fields = ["id", "name", "package", "cloud_server_id", "status", "ip_address", "created_at", "updated_at", "latest_invoice_id", "next_billing_date", "usage"]
 
     def get_latest_invoice_id(self, vm: VirtualMachine) -> int | None:
         invoice = Invoice.objects.filter(vm=vm).order_by("-created_at").first()
