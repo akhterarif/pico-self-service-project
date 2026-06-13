@@ -34,6 +34,17 @@ class InvoiceService:
             )
         return invoice
 
+    def get_unpaid_invoices() -> list[Invoice]:
+        # TODO: Add another table to track upcoming due invoices instead of doing this query every time
+        return list(Invoice.objects.filter(status=InvoiceStatus.PENDING, due_date__lte=timezone.localdate() + timedelta(days=3)))
+    
+    def get_expired_pending_invoices() -> list[Invoice]:
+        # TODO: Add another table to track expired pending invoices instead of doing this query every time
+        return list(Invoice.objects.filter(status=InvoiceStatus.PENDING, due_date__lt=timezone.localdate()))
+    
+    def get_overdue_invoices() -> list[Invoice]:
+        # TODO: Add another table to track overdue invoices instead of doing this query every time
+        return list(Invoice.objects.filter(status=InvoiceStatus.OVERDUE, due_date__lt=timezone.localdate()))
 
 class InvoicePaymentService:
     def __init__(self, gateway: MockPaymentGateway | None = None) -> None:
