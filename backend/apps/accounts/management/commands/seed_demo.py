@@ -57,6 +57,7 @@ class Command(BaseCommand):
                     "cloud_server_id": str(uuid.uuid4()),
                     "status": VmStatus.ACTIVE,
                     "ip_address": f"10.42.0.{20 + index}",
+                    "next_billing_date": timezone.now().date(),
                 },
             )
             if created:

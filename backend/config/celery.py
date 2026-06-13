@@ -11,6 +11,10 @@ app.autodiscover_tasks()
 
 
 app.conf.beat_schedule = {
+    "generate-monthly-vm-bills": {
+        "task": "compute.tasks.generate_monthly_vm_invoices",
+        "schedule": crontab(hour=0, minute=0),
+    },
     "send-unpaid-invoice-notification": {
         "task": "billing.tasks.send_unpaid_invoice_notification",
         "schedule": crontab(hour=0, minute=0),

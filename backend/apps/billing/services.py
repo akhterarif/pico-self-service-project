@@ -1,4 +1,4 @@
-from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.db import transaction
 from django.utils import timezone
@@ -13,6 +13,10 @@ class InvoiceService:
     @staticmethod
     def generate_for_vm(vm: VirtualMachine) -> Invoice:
         number = f"INV-{timezone.now():%Y%m%d}-{vm.id:06d}"
+
+        period_start = vm.next_billing_date 
+        period_end = vm.next_billing_date + relativedelta(months=1)
+
         invoice, created = Invoice.objects.get_or_create(
             invoice_number=number,
             defaults={
@@ -20,9 +24,13 @@ class InvoiceService:
                 "vm": vm,
                 "amount": vm.package.monthly_price,
                 "currency": "USD",
-                "due_date": timezone.localdate() + timedelta(days=14),
+                "due_date": timezone.localdate() + relativedelta(days=14),
+                "billing_period_start": period_start,
+                "billing_period_end": period_end,
             },
         )
+        vm.next_billing_date += relativedelta(months=1)
+        vm.save(update_fields=["next_billing_date"])
         if created:
             AuditService.record(
                 customer=vm.customer,
@@ -36,7 +44,7 @@ class InvoiceService:
 
     def get_unpaid_invoices() -> list[Invoice]:
         # TODO: Add another table to track upcoming due invoices instead of doing this query every time
-        return list(Invoice.objects.filter(status=InvoiceStatus.PENDING, due_date__lte=timezone.localdate() + timedelta(days=3)))
+        return list(Invoice.objects.filter(status=InvoiceStatus.PENDING, due_date__lte=timezone.localdate() + relativedelta(days=3)))
     
     def get_expired_pending_invoices() -> list[Invoice]:
         # TODO: Add another table to track expired pending invoices instead of doing this query every time

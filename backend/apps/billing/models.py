@@ -20,6 +20,8 @@ class Invoice(models.Model):
     due_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)
+    billing_period_start = models.DateField(null=True, blank=True)
+    billing_period_end = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

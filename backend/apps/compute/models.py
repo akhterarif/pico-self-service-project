@@ -22,9 +22,14 @@ class VirtualMachine(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    next_billing_date = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
         return self.name
+    
+    @property
+    def monthly_price(self):
+        return self.package.monthly_price
